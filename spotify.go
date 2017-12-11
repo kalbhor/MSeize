@@ -3,6 +3,8 @@ package main
 import (
 	"context"
 	"errors"
+	"io/ioutil"
+	"net/http"
 	"os"
 
 	"golang.org/x/oauth2"
@@ -17,19 +19,33 @@ type Metadata struct {
 	Title       string
 	Artist      string
 	Album       string
-	Image       string
+	Image       []byte
 	DiscNumber  int
 	TrackNumber int
 }
 
 //Sets values from search results
-func (m *Metadata) Load(track spotify.FullTrack) {
+func (m *Metadata) Load(track spotify.FullTrack) error {
 	m.Title = track.SimpleTrack.Name
 	m.Artist = track.SimpleTrack.Artists[0].Name
 	m.Album = track.Album.Name
-	m.Image = track.Album.Images[0].URL
 	m.DiscNumber = track.SimpleTrack.DiscNumber
 	m.TrackNumber = track.SimpleTrack.TrackNumber
+	imageURL := track.Album.Images[0].URL
+
+	resp, err := http.Get(imageURL)
+	if err != nil {
+		return err
+	}
+	defer resp.Body.Close()
+
+	b, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		return err
+	}
+	m.Image = b
+
+	return nil
 }
 
 // Searches spotify and returns a loaded metadata struct
@@ -44,7 +60,10 @@ func GetMetadata(query string, client spotify.Client) (*Metadata, error) {
 		return nil, errors.New("Couldn't fetch metadata")
 	}
 
-	m.Load(results.Tracks.Tracks[0])
+	err = m.Load(results.Tracks.Tracks[0]) // Pass in the top result
+	if err != nil {
+		return m, err
+	}
 	return m, nil
 
 }
