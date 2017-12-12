@@ -2,28 +2,39 @@ package main
 
 import "testing"
 
+var (
+	Title       = "Riding With The King"
+	Artists     = []string{"Eric Clapton", "B.B. King"}
+	Album       = "Riding With The King"
+	DiscNumber  = 1
+	TrackNumber = 1
+)
+
 func TestGetMetadata(t *testing.T) {
-	client, err := Auth()
+	client, err := SpotifyAuth()
 	if err != nil {
 		t.Fatalf("Could not authorise. %v", err)
 	}
-	m, err := GetMetadata("Comfortably Numb", client)
+
+	m, err := GetMetadata("Riding with the king", client)
 	if err != nil {
 		t.Fatalf("Could not search spotify. %v", err)
 	}
-	if m.Title != "Comfortably Numb" {
-		t.Errorf("Got wrong title %s", m.Title)
+
+	if m.Title != Title {
+		t.Fatalf("Didn't get correct title. Got %s instead", m.Title)
 	}
-	if m.Artist != "Pink Floyd" {
-		t.Errorf("Got wrong artist %s", m.Artist)
+	if m.Album != Album {
+		t.Fatalf("Didn't get correct Album. Got %s instead", m.Album)
 	}
-	if m.Album != "The Wall" {
-		t.Errorf("Got wrong album %s", m.Album)
+	if m.TrackNumber != TrackNumber {
+		t.Fatalf("Didn't get correct track number. Got %v instead", m.TrackNumber)
 	}
-	if m.DiscNumber != 2 {
-		t.Errorf("Got wrong disc number %v", m.DiscNumber)
+	if m.DiscNumber != DiscNumber {
+		t.Fatalf("Didn't get correct disc number. Got %v instead", m.DiscNumber)
 	}
-	if m.TrackNumber != 6 {
-		t.Errorf("Got wrong track number %v", m.TrackNumber)
+	if m.Artists[0] != "Eric Clapton" || m.Artists[1] != "B.B. King" {
+		t.Fatalf("Didn't get correct artits")
 	}
+
 }
