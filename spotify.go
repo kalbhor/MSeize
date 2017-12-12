@@ -15,9 +15,8 @@ import (
 
 //Structure for one track's metadata
 type Metadata struct {
-	Client      spotify.Client
 	Title       string
-	Artist      string
+	Artists     []string
 	Album       string
 	Image       []byte
 	DiscNumber  int
@@ -27,10 +26,14 @@ type Metadata struct {
 //Sets values from search results
 func (m *Metadata) Load(track spotify.FullTrack) error {
 	m.Title = track.SimpleTrack.Name
-	m.Artist = track.SimpleTrack.Artists[0].Name
 	m.Album = track.Album.Name
 	m.DiscNumber = track.SimpleTrack.DiscNumber
 	m.TrackNumber = track.SimpleTrack.TrackNumber
+
+	for _, artist := range track.SimpleTrack.Artists {
+		m.Artists = append(m.Artists, artist.Name)
+	}
+
 	imageURL := track.Album.Images[0].URL
 
 	resp, err := http.Get(imageURL)
@@ -68,8 +71,8 @@ func GetMetadata(query string, client spotify.Client) (*Metadata, error) {
 
 }
 
-//Returns a usable "client" that can request spotify content
-func Auth() (spotify.Client, error) {
+//Returns a usable spotify "client" that can request spotify content
+func SpotifyAuth() (spotify.Client, error) {
 	config := &clientcredentials.Config{
 		ClientID:     os.Getenv("SPOTIFY_ID"),
 		ClientSecret: os.Getenv("SPOTIFY_SECRET"),
