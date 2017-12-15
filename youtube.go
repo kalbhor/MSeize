@@ -11,9 +11,17 @@ const (
 	YTResults = YTURL + "results" // results page
 )
 
-// Searches youtube for a video. Returns a map[video title][video url]
-func SearchYT(query string) (map[string]string, error) {
-	m := make(map[string]string) // map of vid titles to vid urls
+// Fields for a youtube video. This can be extended as wanted. (Views, uploader, etc)
+type Video struct {
+	URL   string
+	Title string
+}
+
+// Searches youtube for a video. Returns a slice of Video containing all search results.
+func SearchYT(query string) ([]Video, error) {
+
+	var results []Video
+	var vid Video
 
 	u, err := url.Parse(YTResults)
 	if err != nil {
@@ -28,14 +36,16 @@ func SearchYT(query string) (map[string]string, error) {
 		return nil, err
 	}
 
-	doc.Find("a[rel=spf-prefetch]").Each(func(i int, s *goquery.Selection) {
+	doc.Find("a[rel=spf-prefetch]").Each(func(i int, s *goquery.Selection) { // Go over all search results
 		if title, ok := s.Attr("title"); ok {
 			if href, ok := s.Attr("href"); ok {
-				m[title] = YTURL + href
+				vid.URL = YTURL + href // current video (current search result)
+				vid.Title = title
+				results = append(results, vid) // append to total results
 			}
 		}
 
 	})
 
-	return m, nil
+	return results, nil
 }
