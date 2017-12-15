@@ -7,8 +7,8 @@ import (
 )
 
 const (
-	YTURL     = "https://www.youtube.com/"
-	YTResults = YTURL + "results" // results page
+	YTURL     = "https://www.youtube.com"
+	YTResults = YTURL + "/results" // results page
 )
 
 // Fields for a youtube video. This can be extended as wanted. (Views, uploader, etc)
