@@ -69,8 +69,12 @@ func DownloadMP3(video YTVideo) (*MusicFile, error) {
 
 	file.FolderPath = "./temp/" + epochString + `/`
 	file.Path = file.FolderPath + video.Title + ".mp3"
+	downloadPath := file.FolderPath + "%(title)s.%(ext)s"
+	// Download path and file.Path should essentially be the same thing
+	// but having ".mp3" in the file.Path causes problems with youtube-dl
+	// The downloadPath variable uses a much more flexible approach and uses the video title
 
-	cmd := exec.Command("youtube-dl", "--extract-audio", "--output", file.Path,
+	cmd := exec.Command("youtube-dl", "--extract-audio", "--output", downloadPath,
 		"--audio-format", "mp3", video.URL) // youtube-dl command
 
 	cmd.Run()
