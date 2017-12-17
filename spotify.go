@@ -13,7 +13,7 @@ import (
 	"github.com/zmb3/spotify"
 )
 
-//Structure for one track's metadata
+//Metadata : Structure for one track's metadata
 type Metadata struct {
 	Title       string
 	Artists     []string
@@ -23,7 +23,7 @@ type Metadata struct {
 	TrackNumber int
 }
 
-//Sets values from search results
+//Load : Sets values from search results
 func (m *Metadata) Load(track spotify.FullTrack) error {
 	m.Title = track.SimpleTrack.Name
 	m.Album = track.Album.Name
@@ -51,7 +51,7 @@ func (m *Metadata) Load(track spotify.FullTrack) error {
 	return nil
 }
 
-// Searches spotify and returns a loaded metadata struct
+//GetMetadata : Searches spotify and returns a loaded metadata struct
 func GetMetadata(query string, client spotify.Client) (*Metadata, error) {
 
 	m := new(Metadata)
@@ -71,7 +71,7 @@ func GetMetadata(query string, client spotify.Client) (*Metadata, error) {
 
 }
 
-//Returns a usable spotify "client" that can request spotify content
+//SpotifyAuth : Returns a usable spotify "client" that can request spotify content
 func SpotifyAuth() (spotify.Client, error) {
 	config := &clientcredentials.Config{
 		ClientID:     os.Getenv("SPOTIFY_ID"),

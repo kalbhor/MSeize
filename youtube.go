@@ -14,17 +14,23 @@ const (
 	youtubeResults = youtubeURL + "/results" // results page
 )
 
-//Video : Fields for a youtube video. This can be extended as wanted. (Views, uploader, etc)
-type Video struct {
+//YTVideo :(Short for YoutubeVideo). This can be extended as wanted. (Views, uploader, etc)
+type YTVideo struct {
 	URL   string
 	Title string
 }
 
-//SearchYT : Searches youtube for a video. Returns a slice of Video containing all search results.
-func SearchYT(query string) ([]Video, error) {
+//MusicFile : Represents a downloaded mp3 file
+type MusicFile struct {
+	FolderPath string // unique unix epoch (unique to a nano second)
+	Path       string // path of the music file
+}
 
-	var results []Video
-	var vid Video
+//SearchYT : Searches youtube for a video. Returns a slice of Video containing all search results.
+func SearchYT(query string) ([]YTVideo, error) {
+
+	var results []YTVideo
+	var vid YTVideo
 
 	u, err := url.Parse(youtubeResults)
 	if err != nil {
@@ -54,13 +60,17 @@ func SearchYT(query string) ([]Video, error) {
 }
 
 //DownloadMP3 : Downloads a youtube video and converts it into mp3 (using ffmpeg or avconv) Returns file path and err
-func DownloadMP3(video Video) (string, error) {
+func DownloadMP3(video YTVideo) (*MusicFile, error) {
+
+	file := new(MusicFile)
 
 	epoch := time.Now().UnixNano() // This will fail after the year 2262
 	epochString := strconv.FormatInt(epoch, 10)
-	filePath := "./temp/" + epochString + `/` + video.Title + ".mp3" // Download file to temp
 
-	cmd := exec.Command("youtube-dl", "--extract-audio", "--output", filePath,
+	file.FolderPath = "./temp/" + epochString + `/`
+	file.Path = file.FolderPath + video.Title + ".mp3"
+
+	cmd := exec.Command("youtube-dl", "--extract-audio", "--output", file.Path,
 		"--audio-format", "mp3", video.URL) // youtube-dl command
 
 	cmd.Run()
@@ -82,5 +92,5 @@ func DownloadMP3(video Video) (string, error) {
 		log.Printf("error : %s", err)
 	}*/
 
-	return filePath, nil
+	return file, nil
 }
