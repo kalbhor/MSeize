@@ -1,6 +1,8 @@
 package main
 
 import (
+	"log"
+	"os"
 	"testing"
 )
 
@@ -10,8 +12,9 @@ var (
 	query      = "charlie bit my finger"
 )
 
-func TestSearchYT(t *testing.T) {
+func TestYT(t *testing.T) {
 	results, err := SearchYT(query)
+	var video YTVideo
 	check := false
 
 	if err != nil {
@@ -25,6 +28,7 @@ func TestSearchYT(t *testing.T) {
 	for _, result := range results {
 		if result.Title == VideoTitle && result.URL == VideoURL {
 			check = true
+			video = result
 			break
 		}
 
@@ -32,6 +36,22 @@ func TestSearchYT(t *testing.T) {
 
 	if !check {
 		t.Fatalf("Correct results were not found")
+	}
+
+	file, err := DownloadMP3(video)
+	if err != nil {
+		t.Fatalf("Could not download mp3 for %v", video.URL)
+	}
+
+	if _, err := os.Stat(file.Path); os.IsNotExist(err) {
+		t.Fatalf("Downloaded file couldn't be found. %v", file.Path)
+	}
+
+	// Tests have passed, clean up time
+	err = os.RemoveAll(file.FolderPath)
+	if err != nil {
+		log.Fatalf("%v", err)
+
 	}
 
 }
