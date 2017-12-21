@@ -16,7 +16,7 @@ func TestGetMetadata(t *testing.T) {
 		t.Fatalf("Could not authorise. %v", err)
 	}
 
-	m, err := GetMetadata("Riding with the king", client)
+	m, err := GetMetadata(client, "Riding with the king")
 	if err != nil {
 		t.Fatalf("Could not search spotify. %v", err)
 	}

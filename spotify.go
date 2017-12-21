@@ -35,7 +35,6 @@ func (m *Metadata) Load(track spotify.FullTrack) error {
 	}
 
 	imageURL := track.Album.Images[0].URL
-
 	resp, err := http.Get(imageURL)
 	if err != nil {
 		return err
@@ -52,7 +51,7 @@ func (m *Metadata) Load(track spotify.FullTrack) error {
 }
 
 //GetMetadata : Searches spotify and returns a loaded metadata struct
-func GetMetadata(query string, client spotify.Client) (*Metadata, error) {
+func GetMetadata(client spotify.Client, query string) (*Metadata, error) {
 
 	m := new(Metadata)
 
