@@ -1,4 +1,4 @@
-package main
+package spotify
 
 import (
 	"context"
@@ -70,8 +70,8 @@ func GetMetadata(client spotify.Client, query string) (*Metadata, error) {
 
 }
 
-//SpotifyAuth : Returns a usable spotify "client" that can request spotify content
-func SpotifyAuth() (spotify.Client, error) {
+//Auth : Returns a usable spotify "client" that can request spotify content
+func Auth() (spotify.Client, error) {
 	config := &clientcredentials.Config{
 		ClientID:     os.Getenv("SPOTIFY_ID"),
 		ClientSecret: os.Getenv("SPOTIFY_SECRET"),

@@ -1,4 +1,4 @@
-package main
+package spotify
 
 import "testing"
 
@@ -11,7 +11,7 @@ var (
 )
 
 func TestGetMetadata(t *testing.T) {
-	client, err := SpotifyAuth()
+	client, err := Auth()
 	if err != nil {
 		t.Fatalf("Could not authorise. %v", err)
 	}

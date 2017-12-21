@@ -1,4 +1,4 @@
-package main
+package youtube
 
 import (
 	"net/url"
@@ -11,23 +11,23 @@ import (
 )
 
 const (
-	youtubeURL     = "https://www.youtube.com"
-	youtubeResults = youtubeURL + "/results" // results page
+	URL     = "https://www.youtube.com"
+	Results = URL + "/results" // results page
 )
 
-//YTVideo :(Short for YoutubeVideo). This can be extended as wanted. (Views, uploader, etc)
-type YTVideo struct {
+//Video :(Short for YoutubeVideo). This can be extended as wanted. (Views, uploader, etc)
+type Video struct {
 	URL   string
 	Title string
 }
 
-//SearchYT : Searches youtube for a video. Returns a slice of Video containing all search results.
-func SearchYT(query string) ([]YTVideo, error) {
+//Search : Searches youtube for a video. Returns a slice of Video containing all search results.
+func Search(query string) ([]Video, error) {
 
-	var results []YTVideo
-	var vid YTVideo
+	var results []Video
+	var vid Video
 
-	u, err := url.Parse(youtubeResults)
+	u, err := url.Parse(Results)
 	if err != nil {
 		return nil, err
 	}
@@ -43,7 +43,7 @@ func SearchYT(query string) ([]YTVideo, error) {
 	doc.Find("a[rel=spf-prefetch]").Each(func(i int, s *goquery.Selection) { // Go over all search results
 		if title, ok := s.Attr("title"); ok {
 			if href, ok := s.Attr("href"); ok {
-				vid.URL = youtubeURL + href // current video (current search result)
+				vid.URL = URL + href // current video (current search result)
 				vid.Title = title
 				results = append(results, vid) // append to total results
 			}
@@ -54,8 +54,8 @@ func SearchYT(query string) ([]YTVideo, error) {
 	return results, nil
 }
 
-//DownloadMP3 : Downloads a youtube video and converts it into mp3 (using ffmpeg or avconv) Returns file path and err
-func DownloadMP3(video YTVideo, Folder string) (string, error) {
+//Download : Downloads a youtube video and converts it into mp3 (using ffmpeg or avconv) Returns file path and err
+func Download(video Video, Folder string) (string, error) {
 
 	// Download path and filePath should essentially be the same thing,
 	// but passing filePath in youtube-dl causes an extension error

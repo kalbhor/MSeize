@@ -1,4 +1,4 @@
-package main
+package youtube
 
 import (
 	"log"
@@ -14,8 +14,8 @@ var (
 )
 
 func TestYT(t *testing.T) {
-	results, err := SearchYT(query)
-	var video YTVideo
+	results, err := Search(query)
+	var video Video
 	check := false
 
 	if err != nil {
@@ -39,7 +39,7 @@ func TestYT(t *testing.T) {
 		t.Fatalf("Correct results were not found")
 	}
 
-	filePath, err := DownloadMP3(video, "./tests_files")
+	filePath, err := Download(video, "./tests_files")
 	if err != nil {
 		t.Fatalf("Could not download mp3 for %v", video.URL)
 	}
