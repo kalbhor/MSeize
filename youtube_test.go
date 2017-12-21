@@ -3,6 +3,7 @@ package main
 import (
 	"log"
 	"os"
+	"path"
 	"testing"
 )
 
@@ -38,17 +39,17 @@ func TestYT(t *testing.T) {
 		t.Fatalf("Correct results were not found")
 	}
 
-	file, err := DownloadMP3(video)
+	filePath, err := DownloadMP3(video, "./tests_files")
 	if err != nil {
 		t.Fatalf("Could not download mp3 for %v", video.URL)
 	}
 
-	if _, err := os.Stat(file.Path); os.IsNotExist(err) {
-		t.Fatalf("Downloaded file couldn't be found. %v", file.Path)
+	if _, err := os.Stat(filePath); os.IsNotExist(err) {
+		t.Fatalf("Downloaded file couldn't be found. %v", filePath)
 	}
 
 	// Tests have passed, clean up time
-	err = os.RemoveAll(file.FolderPath)
+	err = os.RemoveAll(path.Dir(filePath))
 	if err != nil {
 		log.Fatalf("%v", err)
 

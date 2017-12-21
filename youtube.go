@@ -2,9 +2,10 @@ package main
 
 import (
 	"net/url"
+	"os"
 	"os/exec"
-	"strconv"
-	"time"
+	"path"
+	"strings"
 
 	"github.com/PuerkitoBio/goquery"
 )
@@ -18,12 +19,6 @@ const (
 type YTVideo struct {
 	URL   string
 	Title string
-}
-
-//MusicFile : Represents a downloaded mp3 file
-type MusicFile struct {
-	FolderPath string // unique unix epoch (unique to a nano second)
-	Path       string // path of the music file
 }
 
 //SearchYT : Searches youtube for a video. Returns a slice of Video containing all search results.
@@ -60,41 +55,21 @@ func SearchYT(query string) ([]YTVideo, error) {
 }
 
 //DownloadMP3 : Downloads a youtube video and converts it into mp3 (using ffmpeg or avconv) Returns file path and err
-func DownloadMP3(video YTVideo) (*MusicFile, error) {
+func DownloadMP3(video YTVideo, Folder string) (string, error) {
 
-	file := new(MusicFile)
-
-	epoch := time.Now().UnixNano() // This will fail after the year 2262
-	epochString := strconv.FormatInt(epoch, 10)
-
-	file.FolderPath = "./temp/" + epochString + `/`
-	file.Path = file.FolderPath + video.Title + ".mp3"
-	downloadPath := file.FolderPath + "%(title)s.%(ext)s"
-	// Download path and file.Path should essentially be the same thing
-	// but having ".mp3" in the file.Path causes problems with youtube-dl
-	// The downloadPath variable uses a much more flexible approach and uses the video title
+	// Download path and filePath should essentially be the same thing,
+	// but passing filePath in youtube-dl causes an extension error
+	// since the file goes from webm -> .mp3,
+	// having .mp3 in the filepath causes problems in the first step (downloading webm)
+	filePath := path.Join(Folder, strings.Replace(video.Title, "\"", "'", -1)+".mp3")
+	downloadPath := path.Join(Folder, "%(title)s.%(ext)s")
 
 	cmd := exec.Command("youtube-dl", "--extract-audio", "--output", downloadPath,
 		"--audio-format", "mp3", video.URL) // youtube-dl command
 
+	cmd.Stdout = os.Stdout
+	cmd.Stderr = os.Stderr
 	cmd.Run()
-	cmd.Wait()
-	/*stdout, err := cmd.StdoutPipe() // stderr logging
-	if err != nil {
-		return filePath, err
-	}
-	if err := cmd.Start(); err != nil {
-		return filePath, err
-	}
 
-	// logging youtube-dl command
-	in := bufio.NewScanner(stdout)
-	for in.Scan() {
-		log.Printf(in.Text())
-	}
-	if err := in.Err(); err != nil {
-		log.Printf("error : %s", err)
-	}*/
-
-	return file, nil
+	return filePath, nil
 }
