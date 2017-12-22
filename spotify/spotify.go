@@ -5,7 +5,6 @@ import (
 	"errors"
 	"io/ioutil"
 	"net/http"
-	"os"
 
 	"golang.org/x/oauth2"
 	"golang.org/x/oauth2/clientcredentials"
@@ -71,10 +70,10 @@ func GetMetadata(client spotify.Client, query string) (*Metadata, error) {
 }
 
 //Auth : Returns a usable spotify "client" that can request spotify content
-func Auth() (spotify.Client, error) {
+func Auth(Id, Secret string) (spotify.Client, error) {
 	config := &clientcredentials.Config{
-		ClientID:     os.Getenv("SPOTIFY_ID"),
-		ClientSecret: os.Getenv("SPOTIFY_SECRET"),
+		ClientID:     Id,
+		ClientSecret: Secret,
 		TokenURL:     spotify.TokenURL,
 	}
 	token, err := config.Token(context.Background())

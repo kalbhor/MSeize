@@ -46,7 +46,9 @@ func main() {
 	path, err := youtube.Download(videos[choice-1], "./")
 	checkErr(err)
 
-	client, err := spotify.Auth()
+	id := os.Getenv("SPOTIFY_ID")
+	secret := os.Getenv("SPOTIFY_SECRET")
+	client, err := spotify.Auth(id, secret)
 	checkErr(err)
 
 	metadata, err := spotify.GetMetadata(client, query)
