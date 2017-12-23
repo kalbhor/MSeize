@@ -1,6 +1,9 @@
 package spotify
 
-import "testing"
+import (
+	"os"
+	"testing"
+)
 
 var (
 	Title       = "Riding With The King"
@@ -11,7 +14,9 @@ var (
 )
 
 func TestGetMetadata(t *testing.T) {
-	client, err := Auth()
+	id := os.Getenv("SPOTIFY_ID")
+	secret := os.Getenv("SPOTIFY_SECRET")
+	client, err := Auth(id, secret)
 	if err != nil {
 		t.Fatalf("Could not authorise. %v", err)
 	}
